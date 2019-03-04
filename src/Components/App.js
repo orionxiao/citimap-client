@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import L from "leaflet";
+import { greenIcon, yellowIcon, redIcon, userIcon } from "./Markers";
 // stylesheet from leaflet package doesn't work, use cdn in index.html instead
 // import "leaflet/dist/leaflet.css";
 import styled from "styled-components";
@@ -23,19 +24,30 @@ class App extends Component {
         long: 0
     };
 
-    createBikeLayer = bikes => {
+    getIcon = available => {
+        if (available === 0) {
+            return redIcon;
+        } else if (available <= 5) {
+            return yellowIcon;
+        } else {
+            return greenIcon;
+        }
+    };
+
+    createBikeLayer = stations => {
         let markers = [];
-        bikes.map(b =>
+        stations.map(s =>
             markers.push(
-                L.marker([b.coords.lat, b.coords.long])
-                .bindPopup(`${b.name} Bikes: ${b.bikes}`)
+                L.marker([s.coords.lat, s.coords.long], {
+                    icon: this.getIcon(s.bikes)
+                }).bindPopup(`${s.name} Bikes: ${s.bikes}`)
             )
         );
 
         return L.layerGroup(markers);
     };
 
-    createMap = bikes => {
+    createMap = stations => {
         const { lat, long } = this.state;
         const CartoDB_Positron = L.tileLayer(
             "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
@@ -47,16 +59,18 @@ class App extends Component {
             }
         );
 
-        let userMarker = L.marker([lat, long]).bindPopup("YOU");
+        let userMarker = L.marker([lat, long], {
+            icon: userIcon
+        }).bindPopup("You are here");
         let userLayer = L.layerGroup([userMarker]);
 
-        let bikesLayer = this.createBikeLayer(bikes);
+        let stationsLayer = this.createBikeLayer(stations);
 
         this.map = L.map("map", {
             center: [lat, long],
             zoom: 14,
             zoomControl: false,
-            layers: [CartoDB_Positron, userLayer, bikesLayer]
+            layers: [CartoDB_Positron, userLayer, stationsLayer]
         });
     };
 
@@ -73,10 +87,10 @@ class App extends Component {
         reader.read().then(function processChunk({ done, value }) {
             if (done) {
                 console.log("Stream complete");
-                const bikes = JSON.parse(buf);
-                console.log(bikes);
-                console.log(bikes.length);
-                self.createMap(bikes);
+                const stations = JSON.parse(buf);
+                console.log(stations);
+                console.log(stations.length);
+                self.createMap(stations);
                 return;
             } else {
                 console.log("chunk");
