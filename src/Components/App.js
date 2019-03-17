@@ -24,6 +24,9 @@ class App extends Component {
         long: 0
     };
 
+    /**
+     * Return different pin colors based on available bikes in station
+     */
     getIcon = available => {
         if (available === 0) {
             return redIcon;
@@ -34,8 +37,14 @@ class App extends Component {
         }
     };
 
-    createBikeLayer = stations => {
+    /**
+     * Create map layer containing all station markers
+     */
+    createStationLayer = stations => {
         let markers = [];
+        /**
+         * TODO: Add onclick method to markers to display station info under/to side of map
+         */
         stations.map(s =>
             markers.push(
                 L.marker([s.coords.lat, s.coords.long], {
@@ -47,6 +56,9 @@ class App extends Component {
         return L.layerGroup(markers);
     };
 
+    /**
+     * Creates map centered on user location and renders pins for all stations within 1.5 miles
+     */
     createMap = stations => {
         const { lat, long } = this.state;
         const CartoDB_Positron = L.tileLayer(
@@ -57,23 +69,27 @@ class App extends Component {
                 subdomains: "abcd",
                 maxZoom: 19
             }
-        );
+        ); //Map styling
 
         let userMarker = L.marker([lat, long], {
             icon: userIcon
         }).bindPopup("You are here");
-        let userLayer = L.layerGroup([userMarker]);
+        let userLayer = L.layerGroup([userMarker]); //TODO: Merge user icon into station layer? What are pros/cons
 
-        let stationsLayer = this.createBikeLayer(stations);
+        let stationsLayer = this.createStationLayer(stations);
 
         this.map = L.map("map", {
             center: [lat, long],
             zoom: 14,
             zoomControl: false,
             layers: [CartoDB_Positron, userLayer, stationsLayer]
-        });
+        }); //Map configuration
     };
 
+    /**
+     * Make GET request to server and process data, then pass to createMap function
+     * TODO: Refactor if adding other API calls and put them in an API folder
+     */
     getData = async () => {
         const { lat, long } = this.state;
         console.log(lat, long);
