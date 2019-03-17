@@ -20,8 +20,17 @@ const Container = styled.div``;
 
 class App extends Component {
     state = {
+        currentStationId: null,
         lat: 0,
         long: 0
+    };
+
+    /**
+     * TODO: make data appear in a side panel when a marker is clicked
+     */
+    onMarkerClick = e => {
+        console.log(`clicked on station id ${e.target.id}`);
+        this.setState({ currentStationId: e.target.id });
     };
 
     /**
@@ -38,6 +47,21 @@ class App extends Component {
     };
 
     /**
+     * TODO: Create marker containing data and onclicks
+     */
+    createMarker = station => {
+        let marker = L.marker([station.coords.lat, station.coords.long], {
+            icon: this.getIcon(station.bikes),
+            title: station.name
+        });
+        marker.id = station.id;
+        marker.stationName = station.name;
+        marker.on("click", this.onMarkerClick);
+        marker.bindPopup(`Bikes: ${station.bikes}`);
+        return marker;
+    };
+
+    /**
      * Create map layer containing all station markers
      */
     createStationLayer = stations => {
@@ -45,14 +69,7 @@ class App extends Component {
         /**
          * TODO: Add onclick method to markers to display station info under/to side of map
          */
-        stations.map(s =>
-            markers.push(
-                L.marker([s.coords.lat, s.coords.long], {
-                    icon: this.getIcon(s.bikes),
-                    title: s.name
-                }).bindPopup(`Bikes: ${s.bikes}`)
-            )
-        );
+        stations.map(s => markers.push(this.createMarker(s)));
 
         return L.layerGroup(markers);
     };
