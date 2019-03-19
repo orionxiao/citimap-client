@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const AppWrapper = styled.div`
     display: grid;
     grid-template-columns: 7.5% 85% 7.5%;
-    grid-template-rows: 14% 65% 16% 5%;
+    grid-template-rows: 12% 65% 18% 5%;
     height: 100vh;
     width: 100vw;
 `;
@@ -24,6 +24,13 @@ export const Header = styled.h1`
     grid-column: 2 / 3;
     grid-row: 1 / 2;
     justify-self: center;
+`;
+
+export const HeaderContent = styled.div`
+    font-size: 1.5em;
+    font-variant: small-caps;
+    color: rgb(41, 51, 66);
+    text-shadow: 1.5px 1.5px 4px #425e89;
 `;
 
 export const InfoPanel = styled.div`

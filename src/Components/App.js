@@ -1,51 +1,89 @@
 import React, { Component } from "react";
 import L from "leaflet";
 import { greenIcon, yellowIcon, redIcon, userIcon } from "./Markers";
-import { AppWrapper, MapWrapper, Header, InfoPanel } from "./StyledComponents";
+import {
+    AppWrapper,
+    MapWrapper,
+    Header,
+    HeaderContent,
+    InfoPanel
+} from "./StyledComponents";
 import bikeLogo from "../img/bike-logo.png";
 import rackLogo from "../img/bike-rack-logo.png";
 import serviceLogo from "../img/service-logo.png";
-import styled from "styled-components";
-
-const Container = styled.div`
-    font-size: 1.5em;
-    font-variant: small-caps;
-    color: rgb(41, 51, 66);
-    text-shadow: 1.5px 1.5px 4px #425e89;
-`;
 
 class App extends Component {
     state = {
         currentStation: null,
         lat: 0,
-        long: 0
+        long: 0,
+        searchRange: 2
     };
 
-    getStationInfo = station => (
-        <InfoPanel>
-            <h3 style={{ marginBottom: "0.1em" }}>{station.name}</h3>
-            <div>
-                <img height="18" width="18" src={bikeLogo} /> Bikes Available:{" "}
-                {station.bikes}
-            </div>
-            <div>
-                <img height="15" width="15" src={rackLogo} />
-                {"  "}
-                Total Capacity: {station.totalDocks}
-            </div>
-            <div>
-                <img height="10" width="10" src={serviceLogo} />
-                {"  "}
-                Status: {station.status}
-            </div>
-        </InfoPanel>
-    );
+    dropdownOnChange = e => {
+        this.setState({ searchRange: e.target.value }, this.updateStations);
+    };
+
+    getInfoPanel = station =>
+        station ? (
+            <InfoPanel>
+                <h3 style={{ marginBottom: "0.1em" }}>{station.name}</h3>
+                <div>
+                    <img height="18" width="18" src={bikeLogo} alt="bikeLogo" />{" "}
+                    Bikes Available: {station.bikes}
+                </div>
+                <div>
+                    <img height="15" width="15" src={rackLogo} alt="rackLogo" />
+                    {"  "}
+                    Total Capacity: {station.totalDocks}
+                </div>
+                <div>
+                    <img
+                        height="10"
+                        width="10"
+                        src={serviceLogo}
+                        alt="serviceLogo"
+                    />
+                    {"  "}
+                    Status: {station.status}
+                </div>
+                <label>
+                    {" "}
+                    Search Range:{" "}
+                    <select
+                        defaultValue={this.state.searchRange}
+                        onChange={this.dropdownOnChange}
+                    >
+                        <option value="1">1 mile</option>
+                        <option value="2">2 miles</option>
+                        <option value="3">3 miles</option>
+                    </select>
+                </label>
+            </InfoPanel>
+        ) : (
+            <InfoPanel>
+                <h3 style={{ marginBottom: "0.1em" }}>
+                    Click a station pin to view details
+                </h3>
+                <label>
+                    {" "}
+                    Search Range:{" "}
+                    <select
+                        defaultValue={this.state.searchRange}
+                        onChange={this.dropdownOnChange}
+                    >
+                        <option value="1">1 mile</option>
+                        <option value="2">2 miles</option>
+                        <option value="3">3 miles</option>
+                    </select>
+                </label>
+            </InfoPanel>
+        );
 
     /**
      * TODO: make data appear in a side panel when a marker is clicked
      */
     setCurrentStation = e => {
-        console.log(`clicked on station id ${e.target.station.id}`);
         this.setState({ currentStation: e.target.station });
     };
 
@@ -78,6 +116,9 @@ class App extends Component {
         marker.stationName = station.name;
         marker.on("click", this.setCurrentStation);
         marker.bindPopup(station.name);
+        marker
+            .getPopup()
+            .on("remove", () => this.setState({ currentStation: null }));
         return marker;
     };
 
@@ -122,15 +163,20 @@ class App extends Component {
         }); //Map configuration
     };
 
+    updateStations = () => {
+        this.map.remove();
+        this.getData();
+    };
+
     /**
      * Make GET request to server and process data, then pass to createMap function
      * TODO: Refactor if adding other API calls and put them in an API folder
      */
     getData = async () => {
-        const { lat, long } = this.state;
+        const { lat, long, searchRange } = this.state;
         console.log(lat, long);
         const resp = await fetch(
-            `http://localhost:3001/api/test/${lat}/${long}`
+            `https://citimap-server.herokuapp.com/api/stations/${lat}/${long}/${searchRange}`
         ); //API call
         const reader = resp.body.getReader();
         let buf = ""; //Store string data from unsigned int conversion
@@ -175,10 +221,10 @@ class App extends Component {
         return (
             <AppWrapper>
                 <Header>
-                    <Container>C i t i M a p</Container>
+                    <HeaderContent>C i t i M a p</HeaderContent>
                 </Header>
                 <MapWrapper id="map" />
-                {currentStation && this.getStationInfo(currentStation)}
+                {this.getInfoPanel(currentStation)}
             </AppWrapper>
         );
     }
