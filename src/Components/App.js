@@ -1,11 +1,18 @@
 import React, { Component } from "react";
 import L from "leaflet";
 import { greenIcon, yellowIcon, redIcon, userIcon } from "./Markers";
-import { AppWrapper, MapWrapper, Header } from "./StyledComponents";
-
+import { AppWrapper, MapWrapper, Header, InfoPanel } from "./StyledComponents";
+import bikeLogo from "../img/bike-logo.png";
+import rackLogo from "../img/bike-rack-logo.png";
+import serviceLogo from "../img/service-logo.png";
 import styled from "styled-components";
 
-const Container = styled.div``;
+const Container = styled.div`
+    font-size: 1.5em;
+    font-variant: small-caps;
+    color: rgb(41, 51, 66);
+    text-shadow: 1.5px 1.5px 4px #425e89;
+`;
 
 class App extends Component {
     state = {
@@ -13,6 +20,26 @@ class App extends Component {
         lat: 0,
         long: 0
     };
+
+    getStationInfo = station => (
+        <InfoPanel>
+            <h3 style={{ marginBottom: "0.1em" }}>{station.name}</h3>
+            <div>
+                <img height="18" width="18" src={bikeLogo} /> Bikes Available:{" "}
+                {station.bikes}
+            </div>
+            <div>
+                <img height="15" width="15" src={rackLogo} />
+                {"  "}
+                Total Capacity: {station.totalDocks}
+            </div>
+            <div>
+                <img height="10" width="10" src={serviceLogo} />
+                {"  "}
+                Status: {station.status}
+            </div>
+        </InfoPanel>
+    );
 
     /**
      * TODO: make data appear in a side panel when a marker is clicked
@@ -29,8 +56,8 @@ class App extends Component {
     /**
      * Return different pin colors based on available bikes in station
      */
-    getIcon = available => {
-        if (available === 0) {
+    getIcon = (available, status) => {
+        if (available === 0 || status !== "In Service") {
             return redIcon;
         } else if (available <= 5) {
             return yellowIcon;
@@ -44,7 +71,7 @@ class App extends Component {
      */
     createStationMarker = station => {
         let marker = L.marker([station.coords.lat, station.coords.long], {
-            icon: this.getIcon(station.bikes),
+            icon: this.getIcon(station.bikes, station.status),
             title: station.name
         });
         marker.station = station;
@@ -59,9 +86,6 @@ class App extends Component {
      */
     createStationLayer = stations => {
         let markers = [];
-        /**
-         * TODO: Add onclick method to markers to display station info under/to side of map
-         */
         stations.map(s => markers.push(this.createStationMarker(s)));
 
         return L.layerGroup(markers);
@@ -72,12 +96,12 @@ class App extends Component {
      */
     createMap = stations => {
         const { lat, long } = this.state;
-        const CartoDB_Positron = L.tileLayer(
-            "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+        let Wikimedia = L.tileLayer(
+            "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png",
             {
                 attribution:
-                    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-                subdomains: "abcd",
+                    '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a>',
+                minZoom: 1,
                 maxZoom: 19
             }
         ); //Map styling
@@ -94,7 +118,7 @@ class App extends Component {
             center: [lat, long],
             zoom: 14,
             zoomControl: true,
-            layers: [CartoDB_Positron, userLayer, stationsLayer]
+            layers: [Wikimedia, userLayer, stationsLayer]
         }); //Map configuration
     };
 
@@ -150,19 +174,11 @@ class App extends Component {
         const { currentStation } = this.state;
         return (
             <AppWrapper>
-                <Header>CitiMap</Header>
+                <Header>
+                    <Container>C i t i M a p</Container>
+                </Header>
                 <MapWrapper id="map" />
-                {currentStation && (
-                    <Container>
-                        <Container>{currentStation.name}</Container>
-                        <Container>
-                            Bikes Available: {currentStation.bikes}
-                        </Container>
-                        <Container>
-                            Total Capacity: {currentStation.totalDocks}
-                        </Container>
-                    </Container>
-                )}
+                {currentStation && this.getStationInfo(currentStation)}
             </AppWrapper>
         );
     }
