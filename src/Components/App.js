@@ -1,26 +1,15 @@
 import React, { Component } from "react";
 import L from "leaflet";
 import { greenIcon, yellowIcon, redIcon, userIcon } from "./Markers";
-// stylesheet from leaflet package doesn't work, use cdn in index.html instead
-// import "leaflet/dist/leaflet.css";
+import { AppWrapper, MapWrapper, Header } from "./StyledComponents";
+
 import styled from "styled-components";
-
-const AppWrapper = styled.div`
-    display: flex;
-    justify-content: center;
-    margin-top: 2em;
-`;
-
-const MapWrapper = styled.div`
-    width: ${props => props.width};
-    height: ${props => props.height};
-`;
 
 const Container = styled.div``;
 
 class App extends Component {
     state = {
-        currentStationId: null,
+        currentStation: null,
         lat: 0,
         long: 0
     };
@@ -28,9 +17,13 @@ class App extends Component {
     /**
      * TODO: make data appear in a side panel when a marker is clicked
      */
-    onMarkerClick = e => {
-        console.log(`clicked on station id ${e.target.id}`);
-        this.setState({ currentStationId: e.target.id });
+    setCurrentStation = e => {
+        console.log(`clicked on station id ${e.target.station.id}`);
+        this.setState({ currentStation: e.target.station });
+    };
+
+    clearCurrentStation = () => {
+        this.setState({ currentStation: null });
     };
 
     /**
@@ -49,15 +42,15 @@ class App extends Component {
     /**
      * TODO: Create marker containing data and onclicks
      */
-    createMarker = station => {
+    createStationMarker = station => {
         let marker = L.marker([station.coords.lat, station.coords.long], {
             icon: this.getIcon(station.bikes),
             title: station.name
         });
-        marker.id = station.id;
+        marker.station = station;
         marker.stationName = station.name;
-        marker.on("click", this.onMarkerClick);
-        marker.bindPopup(`Bikes: ${station.bikes}`);
+        marker.on("click", this.setCurrentStation);
+        marker.bindPopup(station.name);
         return marker;
     };
 
@@ -69,7 +62,7 @@ class App extends Component {
         /**
          * TODO: Add onclick method to markers to display station info under/to side of map
          */
-        stations.map(s => markers.push(this.createMarker(s)));
+        stations.map(s => markers.push(this.createStationMarker(s)));
 
         return L.layerGroup(markers);
     };
@@ -92,14 +85,15 @@ class App extends Component {
         let userMarker = L.marker([lat, long], {
             icon: userIcon
         }).bindPopup("You are here");
-        let userLayer = L.layerGroup([userMarker]); //TODO: Merge user icon into station layer? What are pros/cons
+        userMarker.on("click", this.clearCurrentStation);
+        let userLayer = L.layerGroup([userMarker]);
 
         let stationsLayer = this.createStationLayer(stations);
 
         this.map = L.map("map", {
             center: [lat, long],
             zoom: 14,
-            zoomControl: false,
+            zoomControl: true,
             layers: [CartoDB_Positron, userLayer, stationsLayer]
         }); //Map configuration
     };
@@ -153,11 +147,22 @@ class App extends Component {
         );
     }
     render() {
+        const { currentStation } = this.state;
         return (
             <AppWrapper>
-                <Container>
-                    <MapWrapper width="600px" height="600px" id="map" />
-                </Container>
+                <Header>CitiMap</Header>
+                <MapWrapper id="map" />
+                {currentStation && (
+                    <Container>
+                        <Container>{currentStation.name}</Container>
+                        <Container>
+                            Bikes Available: {currentStation.bikes}
+                        </Container>
+                        <Container>
+                            Total Capacity: {currentStation.totalDocks}
+                        </Container>
+                    </Container>
+                )}
             </AppWrapper>
         );
     }
