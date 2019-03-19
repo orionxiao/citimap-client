@@ -1,4 +1,5 @@
 {
     "root": "build/",
-    "clean-urls": true
+    "clean-urls": true,
+    "https_only": true
 }
