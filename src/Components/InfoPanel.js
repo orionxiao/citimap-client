@@ -12,6 +12,8 @@ const createDropdown = (searchRange, dropdownOnChange) => (
             <option value="1">1 mile</option>
             <option value="2">2 miles</option>
             <option value="3">3 miles</option>
+            <option value="4">4 miles</option>
+            <option value="5">5 miles</option>
         </select>
     </label>
 );
