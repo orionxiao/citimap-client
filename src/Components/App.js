@@ -16,13 +16,17 @@ class App extends Component {
         long: 0,
         searchRange: 2,
         lookingForBike: true,
-        loading: true
+        pageLoading: true,
+        mapLoading: true
     };
 
     onToggle = () => {
-        const {lookingForBike} = this.state;
-        this.setState({lookingForBike: !lookingForBike}, this.updateStations);
-    }
+        const { lookingForBike } = this.state;
+        this.setState(
+            { lookingForBike: !lookingForBike, mapLoading: true },
+            this.updateStations
+        );
+    };
 
     getRangeInMeters = () => {
         const { searchRange } = this.state;
@@ -30,14 +34,17 @@ class App extends Component {
     };
 
     dropdownOnChange = e => {
-        this.setState({ searchRange: e.target.value }, this.updateStations);
+        this.setState(
+            { searchRange: e.target.value, mapLoading: true },
+            this.updateStations
+        );
     };
 
     /**
      * Return different pin colors based on available bikes in station
      */
     getIcon = (bikes, totalDocks, status) => {
-        const {lookingForBike} = this.state;
+        const { lookingForBike } = this.state;
         let available = lookingForBike ? bikes : totalDocks - bikes;
         if (available === 0 || status !== "In Service") {
             return redIcon;
@@ -53,7 +60,11 @@ class App extends Component {
      */
     createStationMarker = station => {
         let marker = L.marker([station.coords.lat, station.coords.long], {
-            icon: this.getIcon(station.bikes, station.totalDocks, station.status),
+            icon: this.getIcon(
+                station.bikes,
+                station.totalDocks,
+                station.status
+            ),
             title: station.name
         });
         marker.station = station;
@@ -69,7 +80,8 @@ class App extends Component {
         <div>
             <img height="15" width="15" src=${rackIcon} alt="rackIcon" />
             ${"  "}
-            Docks Available: <strong>${station.totalDocks - station.bikes}</strong>
+            Docks Available: <strong>${station.totalDocks -
+                station.bikes}</strong>
         </div>
         <div>
             <img
@@ -119,20 +131,20 @@ class App extends Component {
 
         let stationsLayer = this.createStationLayer(stations);
 
-        this.setState({ loading: false });
+        this.setState({ pageLoading: false, mapLoading: false }, () => {
+            this.map = L.map("map", {
+                center: [lat, long],
+                zoom: 14,
+                zoomControl: true,
+                layers: [Wikimedia, userLayer, stationsLayer]
+            }); //Map configuration
 
-        this.map = L.map("map", {
-            center: [lat, long],
-            zoom: 14,
-            zoomControl: true,
-            layers: [Wikimedia, userLayer, stationsLayer]
-        }); //Map configuration
-
-        L.circle([lat, long], this.getRangeInMeters(), {
-            weight: 2,
-            opacity: 0.5,
-            color: "#59ade5"
-        }).addTo(this.map);
+            L.circle([lat, long], this.getRangeInMeters(), {
+                weight: 2,
+                opacity: 0.5,
+                color: "#59ade5"
+            }).addTo(this.map);
+        });
     };
 
     updateStations = () => {
@@ -146,7 +158,7 @@ class App extends Component {
      */
     getData = async () => {
         const { lat, long, searchRange } = this.state;
-        console.log(lat, long);
+        // console.log(lat, long);
         const resp = await fetch(
             `https://citimap-server.herokuapp.com/api/stations/${lat}/${long}/${searchRange}`
         ); //API call
@@ -159,14 +171,14 @@ class App extends Component {
          */
         reader.read().then(function processChunk({ done, value }) {
             if (done) {
-                console.log("Stream complete");
+                // console.log("Stream complete");
                 const stations = JSON.parse(buf); //Parse result
-                console.log(stations);
-                console.log(stations.length);
+                // console.log(stations);
+                // console.log(stations.length);
                 self.createMap(stations);
                 return;
             } else {
-                console.log("chunk");
+                // console.log("chunk");
                 let str = new TextDecoder("utf-8").decode(value); //Convert from uint8array into string
                 buf = buf.concat(str); //Add to prior chunks
                 return reader.read().then(processChunk); //Recurse until done
@@ -190,18 +202,24 @@ class App extends Component {
         );
     }
     render() {
-        const { lookingForBike, searchRange, loading } = this.state;
-        return loading ? (
+        const {
+            lookingForBike,
+            searchRange,
+            pageLoading,
+            mapLoading
+        } = this.state;
+        return pageLoading ? (
             <Loader />
         ) : (
             <AppWrapper>
                 <Header />
-                <MapWrapper id="map" />
+                {mapLoading ? <Loader /> : <MapWrapper id="map" />}
                 <OptionsPanel
                     searchRange={searchRange}
                     dropdownOnChange={this.dropdownOnChange}
                     lookingForBike={lookingForBike}
                     onToggle={this.onToggle}
+                    mapLoading={mapLoading}
                 />
                 <Footer />
             </AppWrapper>

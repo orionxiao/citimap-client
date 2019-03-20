@@ -88,7 +88,8 @@ export const ToggleSwitch = styled.div`
     display: inline-block;
     vertical-align: middle;
     margin: 0 1em;
-    cursor: pointer;
+    cursor: ${props => (props.mapLoading ? "not-allowed" : "pointer")};
+    ${props => props.mapLoading && "pointer-events: none;"}
 
     &:after {
         content: " ";

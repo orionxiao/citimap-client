@@ -1,11 +1,17 @@
 import React from "react";
-import { OptionsWrapper, DropdownWapper, ToggleSwitch, ToggleLabel } from "./StyledComponents";
+import {
+    OptionsWrapper,
+    DropdownWapper,
+    ToggleSwitch,
+    ToggleLabel
+} from "./StyledComponents";
 
 const OptionsPanel = ({
     searchRange,
     dropdownOnChange,
     lookingForBike,
-    onToggle
+    onToggle,
+    mapLoading
 }) => {
     return (
         <OptionsWrapper>
@@ -25,8 +31,14 @@ const OptionsPanel = ({
                     </select>
                 </label>
             </DropdownWapper>
-            <ToggleLabel active={!lookingForBike}>Dropping Off Bike</ToggleLabel>
-            <ToggleSwitch active={lookingForBike} onClick={onToggle} />
+            <ToggleLabel active={!lookingForBike}>
+                Dropping Off Bike
+            </ToggleLabel>
+            <ToggleSwitch
+                active={lookingForBike}
+                onClick={onToggle}
+                mapLoading={mapLoading}
+            />
             <ToggleLabel active={lookingForBike}>Picking Up Bike</ToggleLabel>
         </OptionsWrapper>
     );
