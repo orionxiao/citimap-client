@@ -73,17 +73,20 @@ export const DropdownWapper = styled.div`
 
 export const ToggleLabel = styled.div`
     display: inline-block;
-    ${props => props.active && "color: #2274aa; font-weight: bold;"}
+    ${props =>
+        props.active &&
+        "color: #2274aa; font-weight: bold; text-shadow: 0.25px 0.25px 0.5px #425e89;"}
 `;
 
 export const ToggleSwitch = styled.div`
-    -webkit-box-shadow: 0px 0px 0.5em 2px rgba(70, 95, 135, 0.3);
-    -moz-box-shadow: 0px 0px 0.5em 2px rgba(70, 95, 135, 0.3);
-    box-shadow: 0px 0px 0.5em 2px rgba(70, 95, 135, 0.3);
+    -webkit-box-shadow: 0px 0px 0.5em 2px rgba(70, 95, 135, 0.4);
+    -moz-box-shadow: 0px 0px 0.5em 2px rgba(70, 95, 135, 0.4);
+    box-shadow: 0px 0px 0.5em 2px rgba(70, 95, 135, 0.4);
     background: rgba(41, 64, 79, 0.3);
     width: 80px;
     height: 30px;
     overflow: hidden;
+    border: 0.2px groove #546c8f;
     border-radius: 2px;
     display: inline-block;
     vertical-align: middle;
