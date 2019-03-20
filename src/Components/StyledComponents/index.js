@@ -35,12 +35,14 @@ export const HeaderContent = styled.h1`
     margin-bottom: 0.1em;
 `;
 
-export const InfoPanel = styled.div`
+export const InfoPanelWrapper = styled.div`
     grid-column: 2 / 3;
     grid-row: 3 / 4;
     justify-self: center;
     text-align: center;
     margin-top: 1.5em;
+    font-size: 1.1em;
+    overflow: auto;
 `;
 
 export const FooterWrapper = styled.div`
@@ -48,7 +50,7 @@ export const FooterWrapper = styled.div`
     grid-row: 4 / end;
     justify-self: center;
     text-align: center;
-    margin-top: 0.1em;
+    margin-top: 0;
     margin-bottom: 0;
 `
 

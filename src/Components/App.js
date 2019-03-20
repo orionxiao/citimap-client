@@ -1,14 +1,11 @@
 import React, { Component } from "react";
 import L from "leaflet";
 import { greenIcon, yellowIcon, redIcon, userIcon } from "./Markers";
-import { AppWrapper, MapWrapper, InfoPanel } from "./StyledComponents";
+import { AppWrapper, MapWrapper } from "./StyledComponents";
 import Header from "./Header";
 import Footer from "./Footer";
+import InfoPanel from "./InfoPanel";
 import Loader from "./Loader";
-
-import bikeLogo from "../img/bike-logo.png";
-import rackLogo from "../img/bike-rack-logo.png";
-import serviceLogo from "../img/service-logo.png";
 
 class App extends Component {
     state = {
@@ -22,64 +19,6 @@ class App extends Component {
     dropdownOnChange = e => {
         this.setState({ searchRange: e.target.value }, this.updateStations);
     };
-
-    getInfoPanel = station =>
-        station ? (
-            <InfoPanel>
-                <label>
-                    {" "}
-                    Search Range:{" "}
-                    <select
-                        defaultValue={this.state.searchRange}
-                        onChange={this.dropdownOnChange}
-                    >
-                        <option value="1">1 mile</option>
-                        <option value="2">2 miles</option>
-                        <option value="3">3 miles</option>
-                    </select>
-                </label>
-                <h4 style={{ marginBottom: "0.1em", marginTop: "0.5em" }}>
-                    {station.name}
-                </h4>
-                <div>
-                    <img height="18" width="18" src={bikeLogo} alt="bikeLogo" />{" "}
-                    Bikes Available: <strong>{station.bikes}</strong>
-                </div>
-                <div>
-                    <img height="15" width="15" src={rackLogo} alt="rackLogo" />
-                    {"  "}
-                    Total Capacity: <strong>{station.totalDocks}</strong>
-                </div>
-                <div>
-                    <img
-                        height="12"
-                        width="12"
-                        src={serviceLogo}
-                        alt="serviceLogo"
-                    />
-                    {"  "}
-                    Status: <strong>{station.status}</strong>
-                </div>
-            </InfoPanel>
-        ) : (
-            <InfoPanel>
-                <label>
-                    {" "}
-                    Search Range:{" "}
-                    <select
-                        defaultValue={this.state.searchRange}
-                        onChange={this.dropdownOnChange}
-                    >
-                        <option value="1">1 mile</option>
-                        <option value="2">2 miles</option>
-                        <option value="3">3 miles</option>
-                    </select>
-                </label>
-                <h4 style={{ marginBottom: "0.1em", marginTop: "2em" }}>
-                    Click a station pin to view details
-                </h4>
-            </InfoPanel>
-        );
 
     /**
      * TODO: make data appear in a side panel when a marker is clicked
@@ -220,14 +159,18 @@ class App extends Component {
         );
     }
     render() {
-        const { currentStation, loading } = this.state;
+        const { currentStation, searchRange, loading } = this.state;
         return loading ? (
             <Loader />
         ) : (
             <AppWrapper>
                 <Header />
                 <MapWrapper id="map" />
-                {this.getInfoPanel(currentStation)}
+                <InfoPanel
+                    station={currentStation}
+                    searchRange={searchRange}
+                    dropdownOnChange={this.dropdownOnChange}
+                />
                 <Footer />
             </AppWrapper>
         );

@@ -4,7 +4,7 @@ import { HeaderWrapper, HeaderContent } from "./StyledComponents";
 const Header = () => (
     <HeaderWrapper>
         <HeaderContent>C I T I M A P</HeaderContent>
-        <strong>Find Citibikes Near You</strong>
+        <strong>Find Citibike Stations Near You</strong>
     </HeaderWrapper>
 );
 
