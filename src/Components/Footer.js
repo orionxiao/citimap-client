@@ -5,7 +5,7 @@ import githubIcon from "../img/github-icon.svg";
 const Footer = () => (
     <FooterWrapper>
         <a
-            href="https://github.com/orionxiao/"
+            href="https://github.com/orionxiao/citimap"
             target="_blank"
             rel="noopener noreferrer"
         >
