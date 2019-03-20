@@ -11,13 +11,13 @@ export const AppWrapper = styled.div`
 export const MapWrapper = styled.div`
     grid-column: 2 / 3;
     grid-row: 2 / 3;
-    -webkit-box-shadow: 0px 0px 3em 7px rgba(70, 95, 135, 0.87);
-    -moz-box-shadow: 0px 0px 3em 7px rgba(70, 95, 135, 0.87);
-    box-shadow: 0px 0px 3em 7px rgba(70, 95, 135, 0.87);
+    -webkit-box-shadow: 0px 0px 3em 7px rgba(70, 95, 135, 0.3);
+    -moz-box-shadow: 0px 0px 3em 7px rgba(70, 95, 135, 0.3);
+    box-shadow: 0px 0px 3em 7px rgba(70, 95, 135, 0.3);
     border-radius: 7px;
     -moz-border-radius: 7px;
     -webkit-border-radius: 7px;
-    border: 0.5px groove #546c8f;
+    border: 0.2px groove #546c8f;
 `;
 
 export const HeaderWrapper = styled.div`
