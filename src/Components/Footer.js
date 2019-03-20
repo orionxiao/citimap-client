@@ -1,6 +1,6 @@
 import React from "react";
 import { FooterWrapper } from "./StyledComponents";
-import githubLogo from "../img/github-logo.svg";
+import githubIcon from "../img/github-icon.svg";
 
 const Footer = () => (
     <FooterWrapper>
@@ -9,7 +9,7 @@ const Footer = () => (
             target="_blank"
             rel="noopener noreferrer"
         >
-            <img height="14" width="14" src={githubLogo} alt="githubLogo" />
+            <img height="14" width="14" src={githubIcon} alt="githubIcon" />
         </a>
     </FooterWrapper>
 );

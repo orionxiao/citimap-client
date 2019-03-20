@@ -4,42 +4,41 @@ import { greenIcon, yellowIcon, redIcon, userIcon } from "./Markers";
 import { AppWrapper, MapWrapper } from "./StyledComponents";
 import Header from "./Header";
 import Footer from "./Footer";
-import InfoPanel from "./InfoPanel";
+import OptionsPanel from "./OptionsPanel";
 import Loader from "./Loader";
+import bikeIcon from "../img/bike-icon.png";
+import rackIcon from "../img/bike-rack-icon.png";
+import serviceIcon from "../img/service-icon.png";
 
 class App extends Component {
     state = {
-        currentStation: null,
         lat: 0,
         long: 0,
         searchRange: 2,
+        lookingForBike: true,
         loading: true
     };
 
-    getRangeInMeters = () => {
-        const {searchRange} = this.state;
-        return searchRange * 1609.344;
+    onToggle = () => {
+        const {lookingForBike} = this.state;
+        this.setState({lookingForBike: !lookingForBike}, this.updateStations);
     }
+
+    getRangeInMeters = () => {
+        const { searchRange } = this.state;
+        return searchRange * 1609.344;
+    };
 
     dropdownOnChange = e => {
         this.setState({ searchRange: e.target.value }, this.updateStations);
     };
 
     /**
-     * TODO: make data appear in a side panel when a marker is clicked
-     */
-    setCurrentStation = e => {
-        this.setState({ currentStation: e.target.station });
-    };
-
-    clearCurrentStation = () => {
-        this.setState({ currentStation: null });
-    };
-
-    /**
      * Return different pin colors based on available bikes in station
      */
-    getIcon = (available, status) => {
+    getIcon = (bikes, totalDocks, status) => {
+        const {lookingForBike} = this.state;
+        let available = lookingForBike ? bikes : totalDocks - bikes;
         if (available === 0 || status !== "In Service") {
             return redIcon;
         } else if (available <= 5) {
@@ -54,16 +53,36 @@ class App extends Component {
      */
     createStationMarker = station => {
         let marker = L.marker([station.coords.lat, station.coords.long], {
-            icon: this.getIcon(station.bikes, station.status),
+            icon: this.getIcon(station.bikes, station.totalDocks, station.status),
             title: station.name
         });
         marker.station = station;
         marker.stationName = station.name;
-        marker.on("click", this.setCurrentStation);
-        marker.bindPopup(station.name);
-        marker
-            .getPopup()
-            .on("remove", () => this.setState({ currentStation: null }));
+        let popupText = `
+        <h4 style="margin-bottom: 0.1em">
+            ${station.name}
+        </h4>
+        <div>
+            <img height="18" width="18" src=${bikeIcon} alt="bikeIcon" />${" "}
+            Bikes Available: <strong>${station.bikes}</strong>
+        </div>
+        <div>
+            <img height="15" width="15" src=${rackIcon} alt="rackIcon" />
+            ${"  "}
+            Docks Available: <strong>${station.totalDocks - station.bikes}</strong>
+        </div>
+        <div>
+            <img
+                height="15"
+                width="15"
+                src=${serviceIcon}
+                alt="serviceIcon"
+            />
+            ${"  "}
+            Status: <strong>${station.status}</strong>
+        </div>`;
+        marker.bindPopup(popupText);
+
         return marker;
     };
 
@@ -96,10 +115,6 @@ class App extends Component {
             icon: userIcon
         }).bindPopup("You are here");
 
-        userMarker.on("click", this.clearCurrentStation);
-
-
-
         let userLayer = L.layerGroup([userMarker]);
 
         let stationsLayer = this.createStationLayer(stations);
@@ -116,7 +131,6 @@ class App extends Component {
         L.circle([lat, long], this.getRangeInMeters(), {
             weight: 2,
             opacity: 0.5,
-            fillOpacity: 0.1,
             color: "#59ade5"
         }).addTo(this.map);
     };
@@ -162,30 +176,32 @@ class App extends Component {
 
     componentDidMount() {
         navigator.geolocation.getCurrentPosition(
-            position =>
+            position => {
                 this.setState(
                     {
                         lat: position.coords.latitude,
                         long: position.coords.longitude
                     },
                     () => this.getData()
-                ),
+                );
+            },
             error => console.error(error.message),
             { enableHighAccuracy: true }
         );
     }
     render() {
-        const { currentStation, searchRange, loading } = this.state;
+        const { lookingForBike, searchRange, loading } = this.state;
         return loading ? (
             <Loader />
         ) : (
             <AppWrapper>
                 <Header />
                 <MapWrapper id="map" />
-                <InfoPanel
-                    station={currentStation}
+                <OptionsPanel
                     searchRange={searchRange}
                     dropdownOnChange={this.dropdownOnChange}
+                    lookingForBike={lookingForBike}
+                    onToggle={this.onToggle}
                 />
                 <Footer />
             </AppWrapper>

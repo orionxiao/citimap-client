@@ -49,7 +49,7 @@ body {
   } */
 
 .leaflet-bottom, .leaflet-control-attribution {
-    border-radius: 7px;
-    -moz-border-radius: 7px;
-    -webkit-border-radius: 7px;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
 }

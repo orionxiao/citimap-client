@@ -1,8 +1,8 @@
 import React from "react";
 import { InfoPanelWrapper } from "./StyledComponents";
-import bikeLogo from "../img/bike-logo.png";
-import rackLogo from "../img/bike-rack-logo.png";
-import serviceLogo from "../img/service-logo.png";
+import bikeIcon from "../img/bike-icon.png";
+import rackIcon from "../img/bike-rack-icon.png";
+import serviceIcon from "../img/service-icon.png";
 
 const createDropdown = (searchRange, dropdownOnChange) => (
     <label>
@@ -31,11 +31,11 @@ const InfoPanel = ({ station, searchRange, dropdownOnChange }) =>
                 {station.name}
             </h4>
             <div>
-                <img height="18" width="18" src={bikeLogo} alt="bikeLogo" />{" "}
+                <img height="18" width="18" src={bikeIcon} alt="bikeIcon" />{" "}
                 Bikes Available: <strong>{station.bikes}</strong>
             </div>
             <div>
-                <img height="15" width="15" src={rackLogo} alt="rackLogo" />
+                <img height="15" width="15" src={rackIcon} alt="rackIcon" />
                 {"  "}
                 Total Capacity: <strong>{station.totalDocks}</strong>
             </div>
@@ -43,8 +43,8 @@ const InfoPanel = ({ station, searchRange, dropdownOnChange }) =>
                 <img
                     height="12"
                     width="12"
-                    src={serviceLogo}
-                    alt="serviceLogo"
+                    src={serviceIcon}
+                    alt="serviceIcon"
                 />
                 {"  "}
                 Status: <strong>{station.status}</strong>
