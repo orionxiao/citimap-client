@@ -1,13 +1,11 @@
 import React, { Component } from "react";
 import L from "leaflet";
 import { greenIcon, yellowIcon, redIcon, userIcon } from "./Markers";
-import {
-    AppWrapper,
-    MapWrapper,
-    Header,
-    HeaderContent,
-    InfoPanel
-} from "./StyledComponents";
+import { AppWrapper, MapWrapper, InfoPanel } from "./StyledComponents";
+import Header from "./Header";
+import Footer from "./Footer";
+import Loader from "./Loader";
+
 import bikeLogo from "../img/bike-logo.png";
 import rackLogo from "../img/bike-rack-logo.png";
 import serviceLogo from "../img/service-logo.png";
@@ -17,7 +15,8 @@ class App extends Component {
         currentStation: null,
         lat: 0,
         long: 0,
-        searchRange: 2
+        searchRange: 2,
+        loading: true
     };
 
     dropdownOnChange = e => {
@@ -27,44 +26,43 @@ class App extends Component {
     getInfoPanel = station =>
         station ? (
             <InfoPanel>
-                <h3 style={{ marginBottom: "0.1em" }}>{station.name}</h3>
+                <label>
+                    {" "}
+                    Search Range:{" "}
+                    <select
+                        defaultValue={this.state.searchRange}
+                        onChange={this.dropdownOnChange}
+                    >
+                        <option value="1">1 mile</option>
+                        <option value="2">2 miles</option>
+                        <option value="3">3 miles</option>
+                    </select>
+                </label>
+                <h4 style={{ marginBottom: "0.1em", marginTop: "0.5em" }}>
+                    {station.name}
+                </h4>
                 <div>
                     <img height="18" width="18" src={bikeLogo} alt="bikeLogo" />{" "}
-                    Bikes Available: {station.bikes}
+                    Bikes Available: <strong>{station.bikes}</strong>
                 </div>
                 <div>
                     <img height="15" width="15" src={rackLogo} alt="rackLogo" />
                     {"  "}
-                    Total Capacity: {station.totalDocks}
+                    Total Capacity: <strong>{station.totalDocks}</strong>
                 </div>
                 <div>
                     <img
-                        height="10"
-                        width="10"
+                        height="12"
+                        width="12"
                         src={serviceLogo}
                         alt="serviceLogo"
                     />
                     {"  "}
-                    Status: {station.status}
+                    Status: <strong>{station.status}</strong>
                 </div>
-                <label>
-                    {" "}
-                    Search Range:{" "}
-                    <select
-                        defaultValue={this.state.searchRange}
-                        onChange={this.dropdownOnChange}
-                    >
-                        <option value="1">1 mile</option>
-                        <option value="2">2 miles</option>
-                        <option value="3">3 miles</option>
-                    </select>
-                </label>
             </InfoPanel>
         ) : (
             <InfoPanel>
-                <h3 style={{ marginBottom: "0.1em" }}>
-                    Click a station pin to view details
-                </h3>
                 <label>
                     {" "}
                     Search Range:{" "}
@@ -77,6 +75,9 @@ class App extends Component {
                         <option value="3">3 miles</option>
                     </select>
                 </label>
+                <h4 style={{ marginBottom: "0.1em", marginTop: "2em" }}>
+                    Click a station pin to view details
+                </h4>
             </InfoPanel>
         );
 
@@ -155,6 +156,8 @@ class App extends Component {
 
         let stationsLayer = this.createStationLayer(stations);
 
+        this.setState({ loading: false });
+
         this.map = L.map("map", {
             center: [lat, long],
             zoom: 14,
@@ -217,14 +220,15 @@ class App extends Component {
         );
     }
     render() {
-        const { currentStation } = this.state;
-        return (
+        const { currentStation, loading } = this.state;
+        return loading ? (
+            <Loader />
+        ) : (
             <AppWrapper>
-                <Header>
-                    <HeaderContent>C i t i M a p</HeaderContent>
-                </Header>
+                <Header />
                 <MapWrapper id="map" />
                 {this.getInfoPanel(currentStation)}
+                <Footer />
             </AppWrapper>
         );
     }
