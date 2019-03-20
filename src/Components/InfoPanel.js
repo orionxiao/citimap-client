@@ -18,7 +18,8 @@ const createDropdown = (searchRange, dropdownOnChange) => (
 
 /**
  * Stateless functional component that returns the InfoPanel containing
- * information about the currently selected station
+ * information about the currently selected station as well as the dropdown
+ * menu for search range, using props passed down from the App component
  */
 const InfoPanel = ({ station, searchRange, dropdownOnChange }) =>
     station ? (

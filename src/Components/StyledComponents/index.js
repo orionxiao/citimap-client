@@ -11,9 +11,9 @@ export const AppWrapper = styled.div`
 export const MapWrapper = styled.div`
     grid-column: 2 / 3;
     grid-row: 2 / 3;
-    -webkit-box-shadow: 0px 0px 3em 7px rgba(55, 67, 79, 0.87);
-    -moz-box-shadow: 0px 0px 3em 7px rgba(55, 67, 79, 0.87);
-    box-shadow: 0px 0px 3em 7px rgba(55, 67, 79, 0.87);
+    -webkit-box-shadow: 0px 0px 3em 7px rgba(70, 95, 135, 0.87);
+    -moz-box-shadow: 0px 0px 3em 7px rgba(70, 95, 135, 0.87);
+    box-shadow: 0px 0px 3em 7px rgba(70, 95, 135, 0.87);
     border-radius: 7px;
     -moz-border-radius: 7px;
     -webkit-border-radius: 7px;
@@ -24,15 +24,24 @@ export const HeaderWrapper = styled.div`
     grid-column: 2 / 3;
     grid-row: 1 / 2;
     justify-self: center;
-    text-align: center;
 `;
 
 export const HeaderContent = styled.h1`
-    font-size: 2.5em;
-    font-variant: small-caps;
+    font-size: 2.6em;
     color: rgb(41, 51, 66);
     text-shadow: 1.5px 1.5px 4px #425e89;
     margin-bottom: 0.1em;
+    margin-left: 0.2em;
+    letter-spacing: 0.3em;
+    text-align: center;
+`;
+
+export const SubHeaderContent = styled.h4`
+    color: rgb(61, 61, 61);
+    text-shadow: 0.5px 0.5px 1px #425e89;
+    margin-top: 0;
+    letter-spacing: 0.12em;
+    text-align: center;
 `;
 
 export const InfoPanelWrapper = styled.div`
@@ -43,6 +52,7 @@ export const InfoPanelWrapper = styled.div`
     margin-top: 1.5em;
     font-size: 1.1em;
     overflow: auto;
+    color: rgb(73, 73, 73);
 `;
 
 export const FooterWrapper = styled.div`

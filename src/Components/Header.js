@@ -1,10 +1,10 @@
 import React from "react";
-import { HeaderWrapper, HeaderContent } from "./StyledComponents";
+import { HeaderWrapper, HeaderContent, SubHeaderContent } from "./StyledComponents";
 
 const Header = () => (
     <HeaderWrapper>
-        <HeaderContent>C I T I M A P</HeaderContent>
-        <strong>Find Citibike Stations Near You</strong>
+        <HeaderContent>CITIMAP</HeaderContent>
+        <SubHeaderContent>Citibike Stations Near You</SubHeaderContent>
     </HeaderWrapper>
 );
 
