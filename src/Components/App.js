@@ -16,6 +16,11 @@ class App extends Component {
         loading: true
     };
 
+    getRangeInMeters = () => {
+        const {searchRange} = this.state;
+        return searchRange * 1609.344;
+    }
+
     dropdownOnChange = e => {
         this.setState({ searchRange: e.target.value }, this.updateStations);
     };
@@ -90,7 +95,11 @@ class App extends Component {
         let userMarker = L.marker([lat, long], {
             icon: userIcon
         }).bindPopup("You are here");
+
         userMarker.on("click", this.clearCurrentStation);
+
+
+
         let userLayer = L.layerGroup([userMarker]);
 
         let stationsLayer = this.createStationLayer(stations);
@@ -103,6 +112,13 @@ class App extends Component {
             zoomControl: true,
             layers: [Wikimedia, userLayer, stationsLayer]
         }); //Map configuration
+
+        L.circle([lat, long], this.getRangeInMeters(), {
+            weight: 2,
+            opacity: 0.5,
+            fillOpacity: 0.1,
+            color: "#59ade5"
+        }).addTo(this.map);
     };
 
     updateStations = () => {
