@@ -20,6 +20,14 @@ class App extends Component {
         mapLoading: true
     };
 
+    /**
+     * When user toggles mode, flip the lookingForBike property in state
+     * and render loading animation while fetching station data.
+     * 
+     * NOTE: there might be a better way to do this if we can access the markers
+     * layer group, but I haven't found a good way to do that so as of now,
+     * we redraw the whole map every time the mode is toggled.
+     */
     onToggle = () => {
         const { lookingForBike } = this.state;
         this.setState(
@@ -28,11 +36,20 @@ class App extends Component {
         );
     };
 
+    /**
+     * Convert miles to meters, used to draw circle showing search
+     * range on map, since L.circle() function takes radius parameter
+     * in meters, not miles
+     */
     getRangeInMeters = () => {
         const { searchRange } = this.state;
         return searchRange * 1609.344;
     };
 
+    /**
+     * When search range is changed, render loading animation while 
+     * fetching station data with new search parameter
+     */
     dropdownOnChange = e => {
         this.setState(
             { searchRange: e.target.value, mapLoading: true },
@@ -41,7 +58,8 @@ class App extends Component {
     };
 
     /**
-     * Return different pin colors based on available bikes in station
+     * Return different pin colors based on available bikes/docks in station,
+     * depending on whether the user is looking for a bike or looking for a dock
      */
     getIcon = (bikes, totalDocks, status) => {
         const { lookingForBike } = this.state;

@@ -2,6 +2,9 @@ import React from "react";
 import { FooterWrapper } from "./StyledComponents";
 import githubIcon from "../img/github-icon.svg";
 
+/**
+ * Stateless functional component for footer with Github logo and link to repo
+ */
 const Footer = () => (
     <FooterWrapper>
         <a
